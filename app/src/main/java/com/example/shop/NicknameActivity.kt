@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 import kotlinx.android.synthetic.main.activity_nickname.*
 
 class NicknameActivity : AppCompatActivity() {
@@ -28,10 +30,13 @@ class NicknameActivity : AppCompatActivity() {
                     .setTitle("Nickname message")
                     .setMessage("Set ${nick} as your nickname?")
                     .setPositiveButton("YES") { dialog, which ->
-                        getSharedPreferences("Shop", MODE_PRIVATE)
-                            .edit()
-                            .putString("NICKNAME", nick)
-                            .apply()
+                        setNickname(nick)
+
+                        FirebaseDatabase.getInstance().getReference("users")
+                            .child(FirebaseAuth.getInstance().currentUser!!.uid)
+                            .child("nickname")
+                            .setValue(nick)
+
                         setResult(RESULT_OK)
                         Toast.makeText(this, "Nickname saved", Toast.LENGTH_LONG)
                             .show()
